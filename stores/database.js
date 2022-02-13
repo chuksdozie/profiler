@@ -12,7 +12,10 @@ const sql = postgres(process.env.DATABASE_URL, {
   },
   ssl: true,
   dialectOptions: {
-    ssl: true,
+    ssl: {
+      require: true, // This will help you. But you will see nwe error
+      rejectUnauthorized: false, // This line will fix new error
+    },
   },
 });
 

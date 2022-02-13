@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www",
-    "migrate": "node-pg-migrate"
+    "start": "./bin/www",
+    "migrate": "node-pg-migrate",
+    "start dev": "nodemon ./bin/www"
   },
   "dependencies": {
     "argon2": "^0.28.2",

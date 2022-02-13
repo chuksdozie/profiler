@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node-pg-migrate up ./bin/www",
-    "migrate": "node-pg-migrate up",
+    "migrate": "node-pg-migrate",
     "start dev": "nodemon ./bin/www"
   },
   "dependencies": {

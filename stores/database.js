@@ -10,6 +10,10 @@ const sql = postgres(process.env.DATABASE_URL, {
       console.log({ query: queryString, params });
     }
   },
+  ssl: true,
+  dialectOptions: {
+    ssl: true,
+  },
 });
 
 const testDBConnection = async () => {

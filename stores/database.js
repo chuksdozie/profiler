@@ -10,12 +10,12 @@ const sql = postgres(process.env.DATABASE_URL, {
       console.log({ query: queryString, params });
     }
   },
-  ssl: true,
-  dialectOptions: {
-    ssl: {
-      require: true, // This will help you. But you will see nwe error
-      rejectUnauthorized: false, // This line will fix new error
-    },
+  // ssl: true,
+  // dialectOptions: {
+  //   ssl: {
+  //     require: true, // This will help you. But you will see nwe error
+  //     rejectUnauthorized: false, // This line will fix new error
+  //   },
   },
 });
 

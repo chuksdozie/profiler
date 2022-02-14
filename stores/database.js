@@ -10,7 +10,7 @@ const sql = postgres(process.env.DATABASE_URL, {
       console.log({ query: queryString, params });
     }
   },
-  ssl: true,
+  // ssl: true,
   requestCert: false,
   rejectUnauthorized: false,
   strictSSL: false,

@@ -4,15 +4,9 @@ const sendMail = (to, subject, html) => {
   var transporter = nodemailer.createTransport({
     service: "gmail",
     secure: false,
-    // auth: {
-    //   user: process.env.MAIL_ADDRESS,
-    //   pass: process.env.MAIL_PASSWORD,
-    // },
     auth: {
-      type: "OAuth2",
       user: process.env.MAIL_ADDRESS,
-      serviceClient: "106330625670514145905",
-      privateKey: "92fd15bc5861336fb6281468ba803a9e78e12f95",
+      pass: process.env.MAIL_PASSWORD,
     },
     tls: {
       rejectUnauthorized: false,

@@ -9,9 +9,9 @@ const sendMail = (to, subject, html) => {
     //   pass: process.env.MAIL_PASSWORD,
     // },
     auth: {
-      type: OAuth2,
+      type: "OAuth2",
       user: process.env.MAIL_ADDRESS,
-      serviceClient: 106330625670514145905,
+      serviceClient: "106330625670514145905",
       privateKey: "92fd15bc5861336fb6281468ba803a9e78e12f95",
     },
     tls: {

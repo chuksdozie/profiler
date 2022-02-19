@@ -27,16 +27,16 @@ exports.up = (pgm) => {
     },
     department_id: {
       type: "uuid",
-      notNull: true,
+      notNull: false,
       references: 'departments("id")',
       comment: "The Unique id of the employee's department",
     },
-    unit_id: {
-      type: "uuid",
-      notNull: true,
-      references: 'units("id")',
-      comment: "The Unique id of the employee's unit",
-    },
+    // unit_id: {
+    //   type: "uuid",
+    //   notNull: false,
+    //   references: 'units("id")',
+    //   comment: "The Unique id of the employee's unit",
+    // },
     first_name: {
       type: "VARCHAR(250)",
       notNull: true,
@@ -46,6 +46,11 @@ exports.up = (pgm) => {
       type: "VARCHAR(250)",
       notNull: true,
       comment: "The last name of a user",
+    },
+    middle_name: {
+      type: "VARCHAR(250)",
+      notNull: true,
+      comment: "The middle name of a user",
     },
     phonenumber: {
       type: "VARCHAR(250)",
@@ -62,6 +67,11 @@ exports.up = (pgm) => {
       notNull: true,
       comment: "The gender of an employee",
     },
+    avatar: {
+      type: "VARCHAR(250)",
+      unique: false,
+      comment: "The avatar of the employee",
+    },
     job_title: {
       type: "VARCHAR(250)",
       notNull: true,
@@ -74,6 +84,7 @@ exports.up = (pgm) => {
     status: {
       type: "VARCHAR(250)",
       notNull: true,
+      default: "active",
       comment: "The status of an employee => active, archived or leave",
     },
     address: {
@@ -133,32 +144,31 @@ exports.up = (pgm) => {
     // NEXT OF KIN HERE
     next_of_kin_first_name: {
       type: "VARCHAR(250)",
-      notNull: true,
       comment: "The first name of Next Of Kin",
     },
     next_of_kin_last_name: {
       type: "VARCHAR(250)",
-      notNull: true,
       comment: "The last name of Next Of Kin",
     },
     next_of_kin_phonenumber: {
       type: "VARCHAR(250)",
-      notNull: true,
       comment: "The phone number of Next Of Kin",
     },
     next_of_kin_email: {
       type: "VARCHAR(250)",
-      notNull: true,
       comment: "The email of Next Of Kin",
     },
     next_of_kin_gender: {
       type: "VARCHAR(250)",
-      notNull: true,
       comment: "The gender of Next Of Kin",
+    },
+    next_of_kin_relationship: {
+      type: "VARCHAR(250)",
+      comment: "The relationship with Next Of Kin",
     },
     next_of_kin_date_of_birth: {
       type: "DATE",
-      notNull: true,
+      notNull: false,
       comment: "The date of birth of Next Of Kin",
     },
     next_of_kin_address: {

@@ -18,9 +18,9 @@ exports.up = (pgm) => {
       comment: "The name of the department",
     },
     description: {
-      type: "VARCHAR(250)",
+      type: "VARCHAR(500)",
       unique: false,
-      comment: "The logo of the organization",
+      comment: "The description of the description",
     },
     company_id: {
       type: "uuid",

@@ -6,9 +6,10 @@ const { isLoggedIn } = require("../middlewares/index");
 const {
   signUpOrganization,
   verifyEmail,
-  loginUser,
-  updateUserById,
+  loginOrganization,
+  updateOrganizationById,
   changePasswordUserById,
+  getAllOrganizations,
 } = require("../controllers/auth");
 const { errors } = require("postgres/lib/types");
 
@@ -40,15 +41,26 @@ router.get("/verify/:token", async (req, res) => {
   }
 });
 
+router.get("/all", async (req, res) => {
+  try {
+    const data = await getAllOrganizations();
+    res.status(httpStatus.CREATED).json({ data });
+    return;
+  } catch (error) {
+    res.status(error.status || 500).json({ error: error.message });
+    return;
+  }
+});
+
 router.post("/login", async function (req, res, next) {
   try {
     const { email, password } = req.body;
-    const data = await loginUser({
+    const data = await loginOrganization({
       email,
       password,
     });
     console.log({ data });
-    res.status(httpStatus.CREATED).json({ data });
+    res.status(httpStatus.OK).json({ data });
     return;
   } catch (error) {
     console.error(error);
@@ -59,24 +71,26 @@ router.post("/login", async function (req, res, next) {
 
 router.put("/update/:id", isLoggedIn, async function (req, res, next) {
   try {
-    const id = req.params;
+    const { id } = req.params;
     const {
-      first_name,
-      last_name,
+      name,
+      description,
       phonenumber,
-      bank_name,
-      bank_username,
-      bank_account_number,
-      date_of_birth,
+      logo,
+      address,
+      city,
+      state,
+      country,
     } = req.body;
-    const data = await updateUserById(id, {
-      first_name,
-      last_name,
+    const data = await updateOrganizationById(id, {
+      name,
+      description,
       phonenumber,
-      bank_name,
-      bank_username,
-      bank_account_number,
-      date_of_birth,
+      logo,
+      address,
+      city,
+      state,
+      country,
     });
     console.log({ data });
     res.status(httpStatus.CREATED).json({ data });

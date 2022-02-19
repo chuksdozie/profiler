@@ -8,6 +8,8 @@ var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
 var organizationsRouter = require("./routes/organization");
+var employeesRouter = require("./routes/employee");
+var departmentsRouter = require("./routes/department");
 // var userRouter = require("./routes/user");
 // var loanRouter = require("./routes/loan");
 // var portfolioRouter = require("./routes/portfolio");
@@ -28,6 +30,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/api/org", organizationsRouter);
+app.use("/api/employee", employeesRouter);
+app.use("/api/department", departmentsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

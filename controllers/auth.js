@@ -1,5 +1,6 @@
 const {
   signUpOrganizationQuery,
+  getAllOrganizationsQuery,
   getOrganizationByEmailQuery,
   getOrganizationByNameQuery,
   verifyOrganizationQuery,
@@ -15,6 +16,20 @@ var { APIError } = require("../config/error");
 const argon2 = require("argon2");
 var jwt = require("jsonwebtoken");
 const { now } = require("../utils");
+
+const emailVerificationSetup = (email) => {
+  // THIS IS TO GENERATE VERIFICATION LINK
+  const token = uuid.v4();
+  const emailKey = `${process.env.REDIS_PREFIX}-${token}`;
+  const mainurl = `${process.env.BASE_URL}/org/verify/${token}`;
+  redis.set(emailKey, email);
+
+  const reciever = email;
+  const mailSubject = "Welcome to Profiler";
+  const mailContent = `<p>Thanks for registering, please <a href="${mainurl}", target="_blank"><button>Verify Email</button></a></p>`;
+
+  return { reciever, mailContent, mailSubject };
+};
 
 const signUpOrganization = async (payload) => {
   try {
@@ -42,18 +57,10 @@ const signUpOrganization = async (payload) => {
       });
     }
 
+    const emailSetUp = await emailVerificationSetup(payload.email);
+
     const orgEmail = await getOrganizationByEmailQuery(payload.email);
     const orgName = await getOrganizationByNameQuery(payload.name);
-
-    // THIS IS TO GENERATE VERIFICATION LINK
-    const token = uuid.v4();
-    const emailKey = `${process.env.REDIS_PREFIX}-${token}`;
-    const mainurl = `${process.env.BASE_URL}/org/verify/${token}`;
-    redis.set(emailKey, payload.email);
-
-    const reciever = await payload.email;
-    const mailSubject = "Welcome to Profiler";
-    const mailContent = `<p>Thanks for registering, please <a href="${mainurl}", target="_blank"><button>Verify Email</button></a> to verify your email.</p>`;
 
     if (orgName.length) {
       throw new APIError({
@@ -78,7 +85,11 @@ const signUpOrganization = async (payload) => {
       password: hashedpassword,
     };
     const [data] = await signUpOrganizationQuery(details);
-    sendMail(reciever, mailSubject, mailContent);
+    sendMail(
+      emailSetUp.reciever,
+      emailSetUp.mailSubject,
+      emailSetUp.mailContent
+    );
     return data;
   } catch (error) {
     throw new APIError({
@@ -111,33 +122,69 @@ const verifyEmail = async (token) => {
   }
 };
 
-const loginUser = async (payload) => {
+const getAllOrganizations = async () => {
   try {
-    const [userDetails] = await loginUserQuery(payload.email);
-    // const reciever = await payload.email;
-    // const mailSubject = "Welcome to Trove";
-    // const mailContent = "The content comes here in HTML FORMAT";
+    const data = await getAllOrganizationsQuery();
+    return data;
+  } catch (error) {
+    throw new APIError({
+      status: error.status || httpStatus.INTERNAL_SERVER_ERROR,
+      errors: error,
+      message: error.message || error,
+    });
+  }
+};
 
-    if (!userDetails) {
+const loginOrganization = async (payload) => {
+  try {
+    if (!payload.email) {
       throw new APIError({
         status: httpStatus.BAD_REQUEST,
-        message: "This email address does not eaxist, please sign up instead.",
+        message: "Please insert an Email Address",
+        errors: "Email Address not provided",
+      });
+    }
+    const [organization] = await getOrganizationByEmailQuery(payload.email);
+
+    if (!organization) {
+      throw new APIError({
+        status: httpStatus.BAD_REQUEST,
+        message: "This email address does not exist, please sign up instead.",
         errors: "Email does not exists",
       });
     }
+
+    if (!organization.verified) {
+      // THIS IS TO GENERATE VERIFICATION LINK
+      const emailSetUp = await emailVerificationSetup(payload.email);
+
+      sendMail(
+        emailSetUp.reciever,
+        emailSetUp.mailSubject,
+        emailSetUp.mailContent
+      );
+      throw new APIError({
+        status: httpStatus.BAD_REQUEST,
+        message: "Please verify your account. Check your Email Address",
+        errors: "Email Address not verified",
+      });
+    }
     const password = await payload.password;
-    const hashedPassword = await userDetails.password;
+    const hashedPassword = await organization.password;
 
     if (await argon2.verify(hashedPassword, password)) {
       const token = jwt.sign(
         {
-          id: userDetails.id,
-          email: userDetails.email,
+          id: organization.id,
+          email: organization.email,
         },
         process.env.JWT_SECRET,
         { expiresIn: "3d" }
       );
-      return { userDetails, token };
+      organization.logged_at = now();
+
+      const { password, ...rest } = organization;
+      return { ...rest, token };
     } else {
       throw new APIError({
         status: httpStatus.BAD_REQUEST,
@@ -155,52 +202,32 @@ const loginUser = async (payload) => {
   }
 };
 
-const updateUserById = async (user, payload) => {
-  console.log(user.id, payload);
+const updateOrganizationById = async (id, payload) => {
   try {
-    const id = user.id;
-    const [userInfo] = await getUserByIdQuery(id);
-    if (!userInfo) {
+    const [organization] = await getOrganizationByIdQuery(id);
+    console.log(6786, organization);
+    if (!organization) {
       throw new APIError({
         status: httpStatus.BAD_REQUEST,
-        message: "User does not exist",
-        errors: "User does not exist",
-      });
-    }
-
-    if (payload.bank_account_number.length !== 10) {
-      throw new APIError({
-        status: httpStatus.BAD_REQUEST,
-        message: "Account Number is incorrect",
-        errors: "Account Number is incorrect",
-      });
-    }
-
-    if (isNaN(payload.bank_account_number)) {
-      throw new APIError({
-        status: httpStatus.BAD_REQUEST,
-        message: "Account Number is incorrect",
-        errors: "Account Number is incorrect",
+        message: "Organization does not exist",
+        errors: "Organization does not exist",
       });
     }
 
     const pay = {
-      first_name: payload.first_name || userInfo.first_name,
-      last_name: payload.last_name || userInfo.last_name,
-      phonenumber: payload.phonenumber || userInfo.phonenumber,
-      email: userInfo.email,
-      password: userInfo.password,
-      bank_name: payload.bank_name || userInfo.bank_name,
-      bank_username: payload.bank_username || userInfo.bank_username,
-      bank_account_number:
-        payload.bank_account_number || userInfo.bank_account_number,
-      date_of_birth: payload.date_of_birth || userInfo.date_of_birth,
+      name: payload.name || organization.name,
+      description: payload.description || organization.description,
+      phonenumber: payload.phonenumber || organization.phonenumber,
+      logo: payload.logo || organization.logo,
+      address: payload.address || organization.address,
+      city: payload.city || organization.city,
+      state: payload.state || organization.state,
+      country: payload.country || organization.country,
       updated_at: now(),
     };
-
-    const [data] = await updateUserByIdQuery(userInfo.id, pay);
-    const { password, ...rest } = data;
-    return { ...rest };
+    console.log(4645, pay);
+    const [data] = await updateOrganizationByIdQuery(id, pay);
+    return data;
   } catch (error) {
     throw new APIError({
       status: error.status || httpStatus.INTERNAL_SERVER_ERROR,
@@ -270,7 +297,8 @@ const changePasswordUserById = async (user, payload) => {
 module.exports = {
   signUpOrganization,
   verifyEmail,
-  loginUser,
-  updateUserById,
+  loginOrganization,
+  getAllOrganizations,
+  updateOrganizationById,
   changePasswordUserById,
 };

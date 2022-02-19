@@ -18,6 +18,11 @@ exports.up = (pgm) => {
       notNull: true,
       comment: "The name of the organization",
     },
+    description: {
+      type: "VARCHAR(500)",
+      unique: false,
+      comment: "The description of the description",
+    },
     email: {
       type: "VARCHAR(250)",
       notNull: true,

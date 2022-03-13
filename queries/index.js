@@ -63,6 +63,7 @@ const updateOrganizationByIdQuery = async (id, payload) => {
     "city",
     "state",
     "country",
+    "logged_at",
     "updated_at"
   )}
   WHERE id = ${id} AND deleted_at IS NULL

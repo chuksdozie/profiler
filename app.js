@@ -10,9 +10,7 @@ var indexRouter = require("./routes/index");
 var organizationsRouter = require("./routes/organization");
 var employeesRouter = require("./routes/employee");
 var departmentsRouter = require("./routes/department");
-// var userRouter = require("./routes/user");
-// var loanRouter = require("./routes/loan");
-// var portfolioRouter = require("./routes/portfolio");
+
 const { testDBConnection } = require("./stores/database.js");
 
 var app = express();

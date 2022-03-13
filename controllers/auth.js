@@ -65,8 +65,7 @@ const signUpOrganization = async (payload) => {
     if (orgName.length) {
       throw new APIError({
         status: httpStatus.BAD_REQUEST,
-        message:
-          "This Company Name is already in use, please use a different name",
+        message: "This Company Name is already in use",
         errors: "Company Name already exists",
       });
     }
@@ -181,9 +180,23 @@ const loginOrganization = async (payload) => {
         process.env.JWT_SECRET,
         { expiresIn: "3d" }
       );
-      organization.logged_at = now();
 
-      const { password, ...rest } = organization;
+      const pay = {
+        name: payload.name || organization.name,
+        description: payload.description || organization.description,
+        phonenumber: payload.phonenumber || organization.phonenumber,
+        logo: payload.logo || organization.logo,
+        address: payload.address || organization.address,
+        city: payload.city || organization.city,
+        state: payload.state || organization.state,
+        country: payload.country || organization.country,
+        logged_at: now(),
+        updated_at: organization.updated_at,
+      };
+
+      const [data] = await updateOrganizationByIdQuery(organization.id, pay);
+
+      const { password, ...rest } = data;
       return { ...rest, token };
     } else {
       throw new APIError({
@@ -223,6 +236,7 @@ const updateOrganizationById = async (id, payload) => {
       city: payload.city || organization.city,
       state: payload.state || organization.state,
       country: payload.country || organization.country,
+      logged_at: organization.logged_at,
       updated_at: now(),
     };
     console.log(4645, pay);

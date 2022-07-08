@@ -4,7 +4,7 @@ const {
   updateEmployeeByIdQuery,
   getEmployeeByIdQuery,
 } = require("../queries/index");
-const { sendMail } = require("../config/mailer");
+const { sendMyMail } = require("../config/mailer");
 const redis = require("../config/redis");
 const uuid = require("uuid");
 var httpStatus = require("http-status");
@@ -91,7 +91,7 @@ const addNewEmployee = async (payload) => {
 
     const data = await addEmployeeQuery(payload);
 
-    // sendMail(
+    // sendMyMail(
     //   emailSetUp.reciever,
     //   emailSetUp.mailSubject,
     //   emailSetUp.mailContent

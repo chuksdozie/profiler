@@ -14,6 +14,7 @@ var departmentsRouter = require("./routes/department");
 // var loanRouter = require("./routes/loan");
 // var portfolioRouter = require("./routes/portfolio");
 const { testDBConnection } = require("./stores/database.js");
+const { sendMyMail } = require("./config/sendgrid");
 
 var app = express();
 
@@ -27,6 +28,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+// sendMyMail(
+//   "chuksdozie48@gmail.com",
+//   "Allocation",
+//   "hello I hope this mai  finds you well"
+// );
 
 app.use("/", indexRouter);
 app.use("/api/org", organizationsRouter);

@@ -9,6 +9,7 @@
     "start-dev": "nodemon ./bin/www"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
     "argon2": "^0.28.2",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
@@ -27,5 +28,8 @@
     "pg": "^8.7.1",
     "postgres": "^1.0.2",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
   }
 }

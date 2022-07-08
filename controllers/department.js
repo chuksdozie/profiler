@@ -4,7 +4,7 @@ const {
   updateDepartmentByIdQuery,
   getDepartmentByIdQuery,
 } = require("../queries/index");
-const { sendMail } = require("../config/mailer");
+const { sendMyMail } = require("../config/sendgrid");
 const redis = require("../config/redis");
 const uuid = require("uuid");
 var httpStatus = require("http-status");

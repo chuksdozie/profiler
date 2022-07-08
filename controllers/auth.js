@@ -8,7 +8,7 @@ const {
   updateOrganizationByIdQuery,
   changePasswordByOrganizationIdQuery,
 } = require("../queries/index");
-const { sendMail } = require("../config/mailer");
+const { sendMyMail } = require("../config/sendgrid");
 const redis = require("../config/redis");
 const uuid = require("uuid");
 var httpStatus = require("http-status");
@@ -84,7 +84,7 @@ const signUpOrganization = async (payload) => {
       password: hashedpassword,
     };
     const [data] = await signUpOrganizationQuery(details);
-    sendMail(
+    sendMyMail(
       emailSetUp.reciever,
       emailSetUp.mailSubject,
       emailSetUp.mailContent
@@ -157,7 +157,7 @@ const loginOrganization = async (payload) => {
       // THIS IS TO GENERATE VERIFICATION LINK
       const emailSetUp = await emailVerificationSetup(payload.email);
 
-      sendMail(
+      sendMyMail(
         emailSetUp.reciever,
         emailSetUp.mailSubject,
         emailSetUp.mailContent
